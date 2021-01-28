@@ -7,31 +7,72 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.math.BigInteger;
-
+//-3927, is divisible by 550? no. -1190, divisible by 550? no. -1190, divisible by 550? no. -1190, divisible by 550? no.
+//revert back to -3927, subtract -3927 again. now subtract -1190, check, -1190, check, -1190 check. Repeat until divisible by 550
+// this only justifies at most 3 * -1190 and not the 5 we see in the solution
 public class EuclideanAdjustment {
     public static void main(String[] args) throws IOException {
         ArrayList<BigInteger> vals = readCharacters();
         BigInteger goal = getGoal(vals);
-        BigInteger targetTracking = new BigInteger("0");
+        BigInteger currentVal = new BigInteger("0");
         vals.sort(null);
         // Size of the list(M values)
         int size = vals.size();
         // Counter to keep track of how many times each operation was done
-        int[] counter = new int[size];
+        BigInteger[] counter = new BigInteger[size];
         for (int i = 0; i < size; i++) {
-            counter[i] = 0;
+            counter[i] = new BigInteger("0");
         }
-
         System.out.println("Target: " + goal);
         System.out.println(vals);
 
-        // loops through and subtracts the values from the goal until the m values are
-        // smaller than the goal or until we run out of M values
+        ArrayList<BigInteger> shortVals = new ArrayList<>();
+        shortVals.add(vals.get(0));
+        shortVals.add(vals.get(2));
+        shortVals.add(vals.get(5));
+        staticAttemp(vals, counter);
+        //inputTest();
 
+    }
 
+    public static void staticAttemp(ArrayList<BigInteger> vals, BigInteger counter[]){
+        BigInteger current = new BigInteger("0");
+        BigInteger one = new BigInteger("1");
+        while(current.mod(vals.get(0)).compareTo(one)!=0){
+            current = current.subtract(vals.get(5));
+            counter[5] = counter[5].subtract(one);
+            BigInteger temp = current;
+            if(current.mod(vals.get(0)).compareTo(one)==0) {
+                System.out.println("Solved");
+                break;
+            }
+            for(int i = 0; i < 7; i++){
+                current = current.subtract(vals.get(2));
+                counter[2] = counter[2].subtract(one);
+                if(current.mod(vals.get(0)).compareTo(one)==0) {
+                    break;
+                }
+            }
+            if(current.mod(vals.get(0)).compareTo(one)==0) {
+                System.out.println("Solved");
+                break;
+            }
+            counter[2] = new BigInteger("0");
+            current = temp;
+        }
+        System.out.println("current " + current);
+        counter[0] = ((current.subtract(one)).divide(vals.get(0))).abs();
+        printArr(counter,new BigInteger("18439"));
+    }
+    public static int[] attempt(ArrayList<BigInteger> vals, BigInteger currentVal, int counter[]) {
+    	BigInteger one = new BigInteger("1");
+    	for(int i = 0; i < vals.size();i++) {
+    		if(vals.get(i).mod(currentVal) == one) {
+    			return counter;
+    		}
 
-        gcd(vals);
-        inputTest();
+    	}
+    	return null;
     }
 
     /**
@@ -64,31 +105,9 @@ public class EuclideanAdjustment {
         return target;
     }
 
-    public static void printArr(int[] arr) {
+    public static void printArr(BigInteger[] arr, BigInteger goal) {
         for (int i = 0; i < arr.length; i++) {
-            System.out.println(arr[i]);
-        }
-    }
-
-
-    public static void distanceToNeigbor(ArrayList<BigInteger> list) {
-        ArrayList<BigInteger> newVals = new ArrayList<BigInteger>();
-
-        for (int i = 0; i < list.size() - 1; i++) {
-            newVals.add(list.get(i + 1).subtract(list.get(i)));
-            // System.out.println(list.get(i+1).subtract(list.get(i)));
-        }
-        System.out.println("");
-        for (int i = 0; i < list.size() - 1; i++) {
-            BigInteger temp = newVals.get(i + 1).subtract(newVals.get(i));
-            if (temp.abs().compareTo(newVals.get(i)) == -1) {
-                newVals.add(newVals.get(i + 1).subtract(newVals.get(i)));
-            }
-        }
-        combineList(list, newVals);
-        newVals.sort(null);
-        for (int i = 0; i < newVals.size(); i++) {
-            System.out.println(newVals.get(i));
+            System.out.println(arr[i].multiply(goal));
         }
     }
 
@@ -98,21 +117,6 @@ public class EuclideanAdjustment {
             if (!list2.contains(list1.get(i)))
                 list2.add(list1.get(i));
         }
-    }
-
-    public static void gcd(ArrayList<BigInteger> vals) {
-        ArrayList<BigInteger> haveGcdWithOtherVals = new ArrayList<>();
-        BigInteger one = new BigInteger("1");
-        for (int i = 0; i < vals.size(); i++) {
-            for (int j = 0; j < vals.size(); j++) {
-                if (!vals.get(i).gcd(vals.get(j)).equals(one) && i != j) {
-                    haveGcdWithOtherVals.add(vals.get(i));
-                    haveGcdWithOtherVals.add(vals.get(j));
-                }
-            }
-        }
-        System.out.println("numbers that have a gcd with atleast one other number in the set: " + haveGcdWithOtherVals);
-
     }
 
     public static void inputTest() throws IOException {
@@ -139,27 +143,37 @@ public class EuclideanAdjustment {
                 smallest = x;
             }
             String str = "";
+            if(c == 0){
+                String temp = "";
+                temp += "value when c ends is = " + x + "\n";
+                outPut.write(temp);
+                c--;
+            }
+            if(a == 0){
+                String temp = "";
+                temp += "value when a ends is = " + x + "\n";
+                outPut.write(temp);
+                a--;
+            }
+            int testVal = 550;
+            if(Math.abs(gcd(testVal, x)) != 1){
+                String temp = "";
+                temp += testVal + " and X have a a gcd of " + gcd(testVal, x) + "\n";
+                //outPut.write(temp);
+            }
             str += x;
-                outPut.write("x = " + x + "\n");
+            outPut.write("x = " + x + "\n");
 
         }
         System.out.println("X = " + x);
         System.out.println("smallest = " + smallest);
         outPut.close();
     }
-    public static void gettingMin(ArrayList<BigInteger> vals, BigInteger goal, BigInteger targetTracking, int[] counter){
-    	int size = vals.size();
-		for (int i = 0; i < size; i++) {
-			while (vals.get(size - i -
-					1).compareTo(goal.subtract(targetTracking)) == -1) {
-				targetTracking =
-						targetTracking.add(vals.get(size - i - 1));
-				counter[size - i - 1]
-						+= 1;
-			}
-		}
-		targetTracking = targetTracking.add(vals.get(0));
-	}
+
+    public static int gcd(int a, int b) {
+        if (b==0) return a;
+        return gcd(b,a%b);
+    }
 }
 
 //try to find a combination of M values that produce as small values as possible
@@ -167,6 +181,13 @@ public class EuclideanAdjustment {
 // Transitivity does not apply to GCD. Must manually compare to find the desired set
 // Find set {a, b, c , n} then do computation on those until we get a value T that had a non 1 GCD with values a-n
 //(1190 * 92195) + 18439 has a non 1 GCD for both 550 and 3927. Both of these have a GCD of 11
+
+
 //All x values are a multiple of T
 // new formula 1 = [m1 * x1] + [m2 * x2] + [mn * xn]
 // once 1 is found multiply the x movements by goal to get the required movements to find goal
+// once we find a way to select the useful numbers from the list of M we use the smallest one for adding and the rest for subtracting
+
+//Current tasks
+//how to select which numbers to use from list
+//how to know when to stop subtracting. Why is 1190 subtracted EXACTLY 5 times
