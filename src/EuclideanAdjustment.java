@@ -27,28 +27,47 @@ public class EuclideanAdjustment {
         System.out.println(vals);
 
         ArrayList<BigInteger> shortVals = new ArrayList<>();
-        shortVals.add(vals.get(0));
-        shortVals.add(vals.get(2));
-        shortVals.add(vals.get(5));
-        staticAttemp(vals, counter);
+        boolean flag = false;
+        for(int i = 0; i < vals.size(); i++){
+            for(int j = 1; j < vals.size()-1; j++){
+                for (int k = 0; k < size; k++) {
+                    counter[k] = new BigInteger("0");
+                }
+                shortVals.clear();
+                shortVals.add(vals.get(i));
+                shortVals.add(vals.get(j));
+                shortVals.add(vals.get(j+1));
+                if(staticAttemp(shortVals, counter, goal)){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag) break;
+        }
+       /* shortVals.add(vals.get(0));//smallest
+        shortVals.add(vals.get(4));//medium
+        shortVals.add(vals.get(5));//largest
+        System.out.println(staticAttemp(shortVals, counter, goal));*/
         //inputTest();
 
     }
 
-    public static void staticAttemp(ArrayList<BigInteger> vals, BigInteger counter[]){
+    public static boolean staticAttemp(ArrayList<BigInteger> vals, BigInteger counter[], BigInteger goal) throws IOException {
+        int loops = 0;
         BigInteger current = new BigInteger("0");
         BigInteger one = new BigInteger("1");
         while(current.mod(vals.get(0)).compareTo(one)!=0){
-            current = current.subtract(vals.get(5));
-            counter[5] = counter[5].subtract(one);
+            if(loops > 100) break;
+            current = current.subtract(vals.get(2));
+            counter[2] = counter[2].subtract(one);
             BigInteger temp = current;
             if(current.mod(vals.get(0)).compareTo(one)==0) {
                 System.out.println("Solved");
                 break;
             }
             for(int i = 0; i < 7; i++){
-                current = current.subtract(vals.get(2));
-                counter[2] = counter[2].subtract(one);
+                current = current.subtract(vals.get(1));
+                counter[1] = counter[1].subtract(one);
                 if(current.mod(vals.get(0)).compareTo(one)==0) {
                     break;
                 }
@@ -57,12 +76,26 @@ public class EuclideanAdjustment {
                 System.out.println("Solved");
                 break;
             }
-            counter[2] = new BigInteger("0");
+            counter[1] = new BigInteger("0");
             current = temp;
+            loops++;
         }
-        System.out.println("current " + current);
+        if(loops > 100) return false;
+        //System.out.println("current " + current);
+        //System.out.println("loops: " + loops);
         counter[0] = ((current.subtract(one)).divide(vals.get(0))).abs();
-        printArr(counter,new BigInteger("18439"));
+
+        writeAnswerToFile(vals, counter, goal);
+        printArr(counter,goal);
+        System.out.println("Added together " + counter[0].multiply(vals.get(0)).add(counter[1].multiply(vals.get(1))).add(counter[2].multiply(vals.get(2))));
+        return true;
+    }
+    public static void writeAnswerToFile(ArrayList<BigInteger> vals, BigInteger counter[], BigInteger goal) throws IOException {
+        FileWriter outPut = new FileWriter("outputSelfTest.txt");
+        for(int i = 0; i < vals.size(); i++){
+            outPut.write(vals.get(i).toString() + " " + counter[i].multiply(goal).toString() + "\n");
+        }
+        outPut.close();
     }
     public static int[] attempt(ArrayList<BigInteger> vals, BigInteger currentVal, int counter[]) {
     	BigInteger one = new BigInteger("1");
