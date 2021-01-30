@@ -46,6 +46,7 @@ public class EuclideanAdjustment {
                     }
 
                 }
+                if(flag) break;
             }
             if(flag) break;
         }
