@@ -28,36 +28,45 @@ public class EuclideanAdjustment {
 
         ArrayList<BigInteger> shortVals = new ArrayList<>();
         boolean flag = false;
-        for(int i = 0; i < vals.size(); i++){
+        for(int i = 0; i < vals.size()-2; i++){
             for(int j = 1; j < vals.size()-1; j++){
-                for (int k = 0; k < size; k++) {
-                    counter[k] = new BigInteger("0");
-                }
-                shortVals.clear();
-                shortVals.add(vals.get(i));
-                shortVals.add(vals.get(j));
-                shortVals.add(vals.get(j+1));
-                if(staticAttemp(shortVals, counter, goal)){
-                    flag = true;
-                    break;
+                for(int k = 2; k < vals.size(); k++){
+                    for (int n = 0; n < size; n++) {
+                        counter[n] = new BigInteger("0");
+                    }
+                    if(i != j && j != k){
+                        shortVals.clear();
+                        shortVals.add(vals.get(i));
+                        shortVals.add(vals.get(j));
+                        shortVals.add(vals.get(k));
+                        if(staticAttemp(shortVals, counter, goal)){
+                            flag = true;
+                            break;
+                        }
+                    }
+
                 }
             }
             if(flag) break;
         }
-       /* shortVals.add(vals.get(0));//smallest
-        shortVals.add(vals.get(4));//medium
-        shortVals.add(vals.get(5));//largest
+       /* shortVals.add(vals.get(5));//smallest
+        shortVals.add(vals.get(6));//medium
+        shortVals.add(vals.get(12));//largest
         System.out.println(staticAttemp(shortVals, counter, goal));*/
+
         //inputTest();
 
     }
 
     public static boolean staticAttemp(ArrayList<BigInteger> vals, BigInteger counter[], BigInteger goal) throws IOException {
-        int loops = 0;
+        BigInteger loops = new BigInteger("0");
         BigInteger current = new BigInteger("0");
         BigInteger one = new BigInteger("1");
         while(current.mod(vals.get(0)).compareTo(one)!=0){
-            if(loops > 100) break;
+            if(loops.compareTo(new BigInteger("10000")) == 1){
+
+                break;
+            }
             current = current.subtract(vals.get(2));
             counter[2] = counter[2].subtract(one);
             BigInteger temp = current;
@@ -65,6 +74,7 @@ public class EuclideanAdjustment {
                 System.out.println("Solved");
                 break;
             }
+
             for(int i = 0; i < 7; i++){
                 current = current.subtract(vals.get(1));
                 counter[1] = counter[1].subtract(one);
@@ -76,13 +86,18 @@ public class EuclideanAdjustment {
                 System.out.println("Solved");
                 break;
             }
+
             counter[1] = new BigInteger("0");
             current = temp;
-            loops++;
+
+            loops = loops.add(one);
+
         }
-        if(loops > 100) return false;
-        //System.out.println("current " + current);
-        //System.out.println("loops: " + loops);
+        if(loops.compareTo(new BigInteger("10000")) == 1) {
+            return false;
+        }
+        System.out.println("current " + current);
+        System.out.println("loops: " + loops);
         counter[0] = ((current.subtract(one)).divide(vals.get(0))).abs();
 
         writeAnswerToFile(vals, counter, goal);
@@ -141,14 +156,6 @@ public class EuclideanAdjustment {
     public static void printArr(BigInteger[] arr, BigInteger goal) {
         for (int i = 0; i < arr.length; i++) {
             System.out.println(arr[i].multiply(goal));
-        }
-    }
-
-    // combines adds all items in list 1 into list 2
-    public static void combineList(ArrayList<BigInteger> list1, ArrayList<BigInteger> list2) {
-        for (int i = 0; i < list1.size(); i++) {
-            if (!list2.contains(list1.get(i)))
-                list2.add(list1.get(i));
         }
     }
 
