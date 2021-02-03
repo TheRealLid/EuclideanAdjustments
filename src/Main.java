@@ -22,6 +22,7 @@ import java.math.BigInteger;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        long startTime = System.nanoTime();
         // gets the values from input.txt
         ArrayList<BigInteger> vals = readCharacters();
         // saves a copy of the unsorted list
@@ -81,19 +82,20 @@ public class Main {
             //gives us the expected values we needed.
 
             for (int i = 0; i < counter.length; i++) {
-
                 counter[i] = counter[i].multiply(goal);
-                System.out.println("Goal: " + goal);
             }
             BigInteger sum = new BigInteger("0");
             for(int i = 0; i < counter.length; i++){
                 sum = sum.add(counter[i].multiply(shortVals.get(i)));
-                System.out.print("(" + shortVals.get(i) + "*" + counter[i] + ") + ");
             }
             System.out.println(sum);
             //writes the answer to output.txt
             writeAnswerToFile(shortVals, counter, originalValues);
         }
+        long endTime   = System.nanoTime();
+        long totalTime = endTime - startTime;
+        totalTime = totalTime/1000000;
+        System.out.println("run time " + totalTime + "ms");
 
     }
 
@@ -122,7 +124,7 @@ public class Main {
         lowMidTermination += 15;
         int upperMidTermination = upperMidLoops.intValue();
         upperMidTermination += 15;
-        while (current.mod(vals.get(0)).compareTo(one) != 0) {
+        while (current.mod(vals.get(smallest)).compareTo(one) != 0) {
             //if the number of loops is larger than 5000 return false. Meaning the program failed.
             if (loops.compareTo(new BigInteger("5000")) == 1) {
                 return false;
@@ -133,7 +135,7 @@ public class Main {
             counter[largest] = counter[largest].subtract(one);
             BigInteger temp = current;
             //checks if this is a valid solution set up
-            if (current.mod(vals.get(0)).compareTo(one) == 0) {
+            if (current.mod(vals.get(smallest)).compareTo(one) == 0) {
                 break;
             }
             //adds the medium number we passed in 10 times
@@ -141,23 +143,23 @@ public class Main {
                 current = current.subtract(vals.get(upperMid));
                 //updates the counter
                 counter[upperMid] = counter[upperMid].subtract(one);
+
                 BigInteger localTemp = current;
                 for(int j = 0; j < lowMidTermination; j++){
                     current = current.subtract(vals.get(lowerMid));
                     counter[lowerMid] = counter[lowerMid].subtract(one);
-                    if (current.mod(vals.get(0)).compareTo(one) == 0) {
+                    if (current.mod(vals.get(smallest)).compareTo(one) == 0) {
                         break;
                     }
                 }
                 //checks if this is a valid solution set up
-                if (current.mod(vals.get(0)).compareTo(one) == 0) {
+                if (current.mod(vals.get(smallest)).compareTo(one) == 0) {
                     break;
                 }
                 current = localTemp;
                 counter[lowerMid] = new BigInteger("0");
-
             }
-            if (current.mod(vals.get(0)).compareTo(one) == 0) {
+            if (current.mod(vals.get(smallest)).compareTo(one) == 0) {
                 break;
             }
             //updates the counter
@@ -174,11 +176,12 @@ public class Main {
             return false;
         }
         //calculates the shifts for our smallest value
-        counter[0] = ((current.subtract(one)).divide(vals.get(0))).abs();
+        counter[smallest] = ((current.subtract(one)).divide(vals.get(smallest))).abs();
         BigInteger sum = new BigInteger("0");
         for(int i = 0; i < vals.size(); i++){
             sum = sum.add(counter[i].multiply(vals.get(i)));
         }
+        System.out.println("Loops: " + loops);
         System.out.println("EARLY SUM: " + sum);
         //returns true meaning the program successfully found a solution
         return true;
@@ -203,8 +206,6 @@ public class Main {
                 }
             }
         }
-
-
         outPut.close();
 
     }
@@ -216,7 +217,7 @@ public class Main {
      * @throws FileNotFoundException
      */
     public static ArrayList<BigInteger> readCharacters() throws FileNotFoundException {
-        File fileName = new File("input.txt");
+        File fileName = new File("input2.txt");
         Scanner in = new Scanner(fileName);
         ArrayList<BigInteger> fileContent = new ArrayList<BigInteger>();
         while (in.hasNextLine()) {
