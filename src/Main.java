@@ -79,12 +79,16 @@ public class Main {
             System.out.println("program found a solution :D");
             //multiplies counters by goal, before this multiplication counters solve for 1. Multiplying by goal
             //gives us the expected values we needed.
+
             for (int i = 0; i < counter.length; i++) {
+
                 counter[i] = counter[i].multiply(goal);
+                System.out.println("Goal: " + goal);
             }
             BigInteger sum = new BigInteger("0");
-            for(int i = 0; i < shortVals.size(); i++){
-                sum = sum.add(counter[i].multiply(vals.get(i)));
+            for(int i = 0; i < counter.length; i++){
+                sum = sum.add(counter[i].multiply(shortVals.get(i)));
+                System.out.print("(" + shortVals.get(i) + "*" + counter[i] + ") + ");
             }
             System.out.println(sum);
             //writes the answer to output.txt
@@ -137,7 +141,6 @@ public class Main {
                 current = current.subtract(vals.get(upperMid));
                 //updates the counter
                 counter[upperMid] = counter[upperMid].subtract(one);
-
                 BigInteger localTemp = current;
                 for(int j = 0; j < lowMidTermination; j++){
                     current = current.subtract(vals.get(lowerMid));
@@ -146,13 +149,13 @@ public class Main {
                         break;
                     }
                 }
-
                 //checks if this is a valid solution set up
                 if (current.mod(vals.get(0)).compareTo(one) == 0) {
                     break;
                 }
                 current = localTemp;
                 counter[lowerMid] = new BigInteger("0");
+
             }
             if (current.mod(vals.get(0)).compareTo(one) == 0) {
                 break;
@@ -172,7 +175,11 @@ public class Main {
         }
         //calculates the shifts for our smallest value
         counter[0] = ((current.subtract(one)).divide(vals.get(0))).abs();
-
+        BigInteger sum = new BigInteger("0");
+        for(int i = 0; i < vals.size(); i++){
+            sum = sum.add(counter[i].multiply(vals.get(i)));
+        }
+        System.out.println("EARLY SUM: " + sum);
         //returns true meaning the program successfully found a solution
         return true;
     }
@@ -209,7 +216,7 @@ public class Main {
      * @throws FileNotFoundException
      */
     public static ArrayList<BigInteger> readCharacters() throws FileNotFoundException {
-        File fileName = new File("input1.txt");
+        File fileName = new File("input.txt");
         Scanner in = new Scanner(fileName);
         ArrayList<BigInteger> fileContent = new ArrayList<BigInteger>();
         while (in.hasNextLine()) {
