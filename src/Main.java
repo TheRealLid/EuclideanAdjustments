@@ -57,12 +57,13 @@ public class Main {
                         }
                         //clears the list
                         shortVals.clear();
-                        //smallest of the 3 values
+                        //smallest
                         shortVals.add(vals.get(i));
-                        //middle of the 3 values
+                        //LowermiddleVal of the 3 values
                         shortVals.add(vals.get(j));
-                        //largest of the 3 values
+                        //UpperMiddleVal
                         shortVals.add(vals.get(k));
+                        //Largest Val
                         shortVals.add(vals.get(l));
                         if (limitedAttempt(shortVals, counter)) {
                             //sets flag to true to allow for break out of loop
@@ -76,7 +77,6 @@ public class Main {
         if (!flag) {
             System.out.println("program failed to find a solution :(");
         } else {
-
             System.out.println("program found a solution :D");
             //multiplies counters by goal, before this multiplication counters solve for 1. Multiplying by goal
             //gives us the expected values we needed.
@@ -217,7 +217,7 @@ public class Main {
      * @throws FileNotFoundException
      */
     public static ArrayList<BigInteger> readCharacters() throws FileNotFoundException {
-        File fileName = new File("input2.txt");
+        File fileName = new File("input.txt");
         Scanner in = new Scanner(fileName);
         ArrayList<BigInteger> fileContent = new ArrayList<BigInteger>();
         while (in.hasNextLine()) {
